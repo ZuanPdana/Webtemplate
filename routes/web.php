@@ -2,6 +2,7 @@
 
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     $products = Product::with(['category', 'images'])
@@ -14,7 +15,50 @@ Route::get('/', function () {
     return view('halamanhome', compact('products'));
 });
 
+Route::get('/search', function (Request $request) {
+    $query = trim($request->get('q', ''));
+
+    if (strlen($query) < 2) {
+        return response()->json([]);
+    }
+
+    $products = Product::with(['category', 'images'])
+        ->where('status', 'published')
+        ->where(function ($q) use ($query) {
+            $q->where('name', 'like', "%{$query}%")
+              ->orWhere('description', 'like', "%{$query}%")
+              ->orWhereHas('category', function ($cq) use ($query) {
+                  $cq->where('name', 'like', "%{$query}%");
+              });
+        })
+        ->orderByDesc('featured')
+        ->orderByDesc('popular')
+        ->limit(8)
+        ->get()
+        ->map(function ($product) {
+            $image = $product->images->first()?->image;
+            $imageUrl = null;
+            if ($image) {
+                $imageUrl = asset($image);
+            } elseif ($product->thumbnail) {
+                $imageUrl = asset('storage/' . $product->thumbnail);
+            }
+
+            return [
+                'id'       => $product->id,
+                'name'     => $product->name,
+                'price'    => 'Rp' . number_format($product->price, 0, ',', '.'),
+                'category' => $product->category?->name ?? 'Produk',
+                'image'    => $imageUrl,
+                'featured' => $product->featured,
+                'popular'  => $product->popular,
+            ];
+        });
+
+    return response()->json($products);
+});
+
 Route::get('/profile', function () {
     return view('profile');
 });
-// test 2 
+
