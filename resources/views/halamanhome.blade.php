@@ -290,10 +290,16 @@
                                     </div>
                                     <div class="flex items-center justify-between gap-4 pt-2">
                                         <p class="text-lg font-black text-slate-950">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
-                                        <button
-                                            class="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
-                                            onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }})"
-                                        >Beli</button>
+                                        <div class="flex items-center gap-2">
+                                            <button
+                                                class="rounded-full border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+                                                onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }})"
+                                            >Keranjang</button>
+                                            <button
+                                                class="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+                                                onclick="buyNow({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }})"
+                                            >Beli</button>
+                                        </div>
                                     </div>
                                 </div>
                             </article>
@@ -744,6 +750,12 @@
             showToast('🛍️ Ditambahkan: ' + name);
         }
 
+        function buyNow(id, name, price) {
+            var purchase = [{ id: id, name: name, price: price, qty: 1 }];
+            localStorage.setItem('shoestep_checkout', JSON.stringify(purchase));
+            window.location.href = '/checkout';
+        }
+
         function updateCartBadge() {
             var badge = document.getElementById('cart-badge');
             var total = cart.reduce(function(s, i) { return s + i.qty; }, 0);
@@ -783,7 +795,7 @@
             if (total) {
                 total.style.display = 'block';
                 total.innerHTML = '<div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:#0f172a;margin-bottom:12px;"><span>Total</span><span>Rp' + sum.toLocaleString('id-ID') + '</span></div>' +
-                    '<button style="width:100%;padding:12px;border-radius:9999px;background:#0f172a;color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;" onclick="showToast(\'🎉 Checkout berhasil! Terima kasih.\');cart=[];localStorage.removeItem(\'shoestep_cart\');updateCartBadge();renderCartPanel();">Checkout</button>';
+                    '<button style="width:100%;padding:12px;border-radius:9999px;background:#0f172a;color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;" onclick="localStorage.setItem(\'shoestep_checkout\', JSON.stringify(cart)); window.location.href=\'/checkout\';">Checkout</button>';
             }
         }
 
