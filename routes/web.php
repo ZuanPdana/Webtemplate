@@ -13,4 +13,8 @@ Route::get('/', function () {
 
     return view('halamanhome', compact('products'));
 });
+
+Route::get('/profile', function () {
+    return view('profile');
+});
 // test 2 

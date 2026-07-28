@@ -13,6 +13,7 @@
                 <div class="mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-4 max-w-7xl">
                     <a href="/" class="text-lg font-black tracking-[0.3em] text-slate-950">SHOESTEP</a>
                     <nav class="hidden items-center gap-8 text-sm text-slate-600 md:flex">
+                        <a href="/profile" class="transition hover:text-slate-950">Profil</a>
                         <a href="#produk" class="transition hover:text-slate-950">Produk</a>
                         <a href="#fitur" class="transition hover:text-slate-950">Fitur</a>
                         <a href="#tentang" class="transition hover:text-slate-950">Tentang</a>
