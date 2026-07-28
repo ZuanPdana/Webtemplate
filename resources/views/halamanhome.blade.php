@@ -104,119 +104,54 @@
                     </div>
 
                     <div class="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-                        <article class="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-                            <div class="relative overflow-hidden bg-slate-100 p-6">
-                                <span class="absolute left-4 top-4 rounded-full bg-slate-950 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.28em] text-white">Terlaris</span>
-                                <button class="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-lg shadow-sm">♡</button>
-                                <div class="flex h-52 items-center justify-center">
-                                    <svg viewBox="0 0 240 140" class="h-40 w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <ellipse cx="120" cy="128" rx="100" ry="9" fill="#e2e8f0" />
-                                        <path d="M35 108 Q50 72 100 65 L168 58 Q200 58 205 76 Q210 92 192 100 Q172 108 120 112 Q72 115 35 108Z" fill="#cbd5e1" />
-                                        <path d="M100 65 Q112 46 136 44 L180 46 Q198 49 202 65 L168 58Z" fill="#94a3b8" />
-                                        <path d="M35 108 Q42 100 66 99 L198 99 Q210 99 210 105 L198 111 Q120 117 35 108Z" fill="#64748b" />
-                                    </svg>
+                        @forelse ($products as $product)
+                            <article class="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
+                                <div class="relative overflow-hidden bg-slate-100 p-6">
+                                    @if ($product->featured)
+                                        <span class="absolute left-4 top-4 rounded-full bg-slate-950 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.28em] text-white">Terlaris</span>
+                                    @elseif ($product->popular)
+                                        <span class="absolute left-4 top-4 rounded-full bg-amber-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.28em] text-amber-700">Populer</span>
+                                    @endif
+                                    <button class="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-lg shadow-sm">♡</button>
+                                    <div class="flex h-52 items-center justify-center">
+                                        @php
+                                        $image = $product->images->first()?->image;
+                                    @endphp
+                                    @if ($image)
+                                        <img src="{{ asset($image) }}" alt="{{ $product->name }}" class="h-40 w-full object-contain" />
+                                    @elseif ($product->thumbnail)
+                                        <img src="{{ asset('storage/' . $product->thumbnail) }}" alt="{{ $product->name }}" class="h-40 w-full object-contain" />
+                                    @else
+                                        <svg viewBox="0 0 240 140" class="h-40 w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <ellipse cx="120" cy="128" rx="100" ry="9" fill="#e2e8f0" />
+                                            <path d="M35 108 Q50 72 100 65 L168 58 Q200 58 205 76 Q210 92 192 100 Q172 108 120 112 Q72 115 35 108Z" fill="#cbd5e1" />
+                                            <path d="M100 65 Q112 46 136 44 L180 46 Q198 49 202 65 L168 58Z" fill="#94a3b8" />
+                                            <path d="M35 108 Q42 100 66 99 L198 99 Q210 99 210 105 L198 111 Q120 117 35 108Z" fill="#64748b" />
+                                        </svg>
+                                    @endif
+                                    </div>
                                 </div>
+                                <div class="space-y-4 p-6">
+                                    <div class="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-slate-400">
+                                        <span>{{ $product->category?->name ?? 'Kategori' }}</span>
+                                        <span class="rounded-full bg-emerald-50 px-2 py-1 text-emerald-600">Stok {{ $product->stock }}</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-black text-slate-950">{{ $product->name }}</h3>
+                                        <p class="mt-2 text-sm text-slate-500">{{ Str::title($product->status) }} / {{ $product->weight ?? '0.0' }} kg</p>
+                                    </div>
+                                    <div class="flex items-center justify-between gap-4 pt-2">
+                                        <p class="text-lg font-black text-slate-950">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
+                                        <a href="#" class="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">Beli</a>
+                                    </div>
+                                </div>
+                            </article>
+                        @empty
+                            <div class="col-span-full rounded-[2rem] border border-dashed border-slate-300 bg-white/90 p-12 text-center">
+                                <p class="text-lg font-black text-slate-950">Produk habis</p>
+                                <p class="mt-3 text-sm text-slate-500">Tidak ada produk tersedia saat ini. Silakan cek kembali nanti.</p>
                             </div>
-                            <div class="space-y-4 p-6">
-                                <div class="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-slate-400">
-                                    <span>Sport</span>
-                                    <span class="rounded-full bg-emerald-50 px-2 py-1 text-emerald-600">Stok 42</span>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-black text-slate-950">Nike Air Max 270</h3>
-                                    <p class="mt-2 text-sm text-slate-500">4.9 ★ · 120 review</p>
-                                </div>
-                                <div class="flex items-center justify-between gap-4 pt-2">
-                                    <p class="text-lg font-black text-slate-950">Rp1.250.000</p>
-                                    <a href="#" class="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">Beli</a>
-                                </div>
-                            </div>
-                        </article>
-
-                        <article class="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-                            <div class="relative overflow-hidden bg-slate-100 p-6">
-                                <button class="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-lg shadow-sm">♡</button>
-                                <div class="flex h-52 items-center justify-center">
-                                    <svg viewBox="0 0 240 140" class="h-40 w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <ellipse cx="120" cy="128" rx="100" ry="9" fill="#e2e8f0" />
-                                        <path d="M35 108 Q50 72 100 65 L168 58 Q200 58 205 76 Q210 92 192 100 Q172 108 120 112 Q72 115 35 108Z" fill="#cbd5e1" />
-                                        <path d="M100 65 Q112 46 136 44 L180 46 Q198 49 202 65 L168 58Z" fill="#94a3b8" />
-                                        <path d="M35 108 Q42 100 66 99 L198 99 Q210 99 210 105 L198 111 Q120 117 35 108Z" fill="#64748b" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="space-y-4 p-6">
-                                <div class="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-slate-400">
-                                    <span>Sport</span>
-                                    <span class="rounded-full bg-slate-100 px-2 py-1 text-slate-600">Stok 28</span>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-black text-slate-950">Adidas Ultraboost 23</h3>
-                                    <p class="mt-2 text-sm text-slate-500">4.8 ★ · 98 review</p>
-                                </div>
-                                <div class="flex items-center justify-between gap-4 pt-2">
-                                    <p class="text-lg font-black text-slate-950">Rp1.080.000</p>
-                                    <a href="#" class="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">Beli</a>
-                                </div>
-                            </div>
-                        </article>
-
-                        <article class="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-                            <div class="relative overflow-hidden bg-slate-100 p-6">
-                                <span class="absolute left-4 top-4 rounded-full bg-amber-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.28em] text-amber-700">Baru</span>
-                                <button class="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-lg shadow-sm">♡</button>
-                                <div class="flex h-52 items-center justify-center">
-                                    <svg viewBox="0 0 240 140" class="h-40 w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <ellipse cx="120" cy="128" rx="100" ry="9" fill="#e2e8f0" />
-                                        <path d="M35 108 Q50 72 100 65 L168 58 Q200 58 205 76 Q210 92 192 100 Q172 108 120 112 Q72 115 35 108Z" fill="#cbd5e1" />
-                                        <path d="M100 65 Q112 46 136 44 L180 46 Q198 49 202 65 L168 58Z" fill="#94a3b8" />
-                                        <path d="M35 108 Q42 100 66 99 L198 99 Q210 99 210 105 L198 111 Q120 117 35 108Z" fill="#64748b" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="space-y-4 p-6">
-                                <div class="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-slate-400">
-                                    <span>Casual</span>
-                                    <span class="rounded-full bg-slate-100 px-2 py-1 text-slate-600">Stok 65</span>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-black text-slate-950">Converse Chuck 70</h3>
-                                    <p class="mt-2 text-sm text-slate-500">4.8 ★ · 210 review</p>
-                                </div>
-                                <div class="flex items-center justify-between gap-4 pt-2">
-                                    <p class="text-lg font-black text-slate-950">Rp899.000</p>
-                                    <a href="#" class="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">Beli</a>
-                                </div>
-                            </div>
-                        </article>
-
-                        <article class="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl">
-                            <div class="relative overflow-hidden bg-slate-100 p-6">
-                                <button class="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-lg shadow-sm">♡</button>
-                                <div class="flex h-52 items-center justify-center">
-                                    <svg viewBox="0 0 240 140" class="h-40 w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <ellipse cx="120" cy="128" rx="100" ry="9" fill="#e2e8f0" />
-                                        <path d="M35 108 Q50 72 100 65 L168 58 Q200 58 205 76 Q210 92 192 100 Q172 108 120 112 Q72 115 35 108Z" fill="#cbd5e1" />
-                                        <path d="M100 65 Q112 46 136 44 L180 46 Q198 49 202 65 L168 58Z" fill="#94a3b8" />
-                                        <path d="M35 108 Q42 100 66 99 L198 99 Q210 99 210 105 L198 111 Q120 117 35 108Z" fill="#64748b" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="space-y-4 p-6">
-                                <div class="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-slate-400">
-                                    <span>Casual</span>
-                                    <span class="rounded-full bg-slate-100 px-2 py-1 text-slate-600">Stok 80</span>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-black text-slate-950">Vans Old Skool</h3>
-                                    <p class="mt-2 text-sm text-slate-500">4.7 ★ · 340 review</p>
-                                </div>
-                                <div class="flex items-center justify-between gap-4 pt-2">
-                                    <p class="text-lg font-black text-slate-950">Rp759.000</p>
-                                    <a href="#" class="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">Beli</a>
-                                </div>
-                            </div>
-                        </article>
+                        @endforelse
                     </div>
                 </section>
 

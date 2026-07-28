@@ -17,21 +17,11 @@ class CategorySeeder extends Seeder
         $now = Carbon::now();
 
         $categories = [
-            ['name' => 'Burger', 'icon' => 'burger'],
-            ['name' => 'Pizza', 'icon' => 'pizza'],
-            ['name' => 'Dessert', 'icon' => 'dessert'],
-            ['name' => 'Drinks', 'icon' => 'drink'],
-            ['name' => 'Seafood', 'icon' => 'fish'],
-            ['name' => 'Pasta', 'icon' => 'pasta'],
-            ['name' => 'Chicken', 'icon' => 'chicken'],
-            ['name' => 'Coffee', 'icon' => 'coffee'],
-            ['name' => 'Salad', 'icon' => 'salad'],
-            ['name' => 'Asian Food', 'icon' => 'bowl-food'],
-            ['name' => 'Healthy Food', 'icon' => 'leaf'],
-            ['name' => 'Breakfast', 'icon' => 'sun'],
-            ['name' => 'BBQ', 'icon' => 'fire'],
-            ['name' => 'Noodles', 'icon' => 'noodles'],
-            ['name' => 'Ice Cream', 'icon' => 'ice-cream'],
+            ['name' => 'Sport', 'icon' => 'sport'],
+            ['name' => 'Casual', 'icon' => 'casual'],
+            ['name' => 'Formal', 'icon' => 'formal'],
+            ['name' => 'Running', 'icon' => 'running'],
+            ['name' => 'Boots', 'icon' => 'boots'],
         ];
 
         foreach ($categories as $index => $category) {
