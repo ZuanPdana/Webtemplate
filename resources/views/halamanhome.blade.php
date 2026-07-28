@@ -17,7 +17,7 @@
                         <a href="#produk" class="transition hover:text-slate-950">Produk</a>
                         <a href="#fitur" class="transition hover:text-slate-950">Fitur</a>
                         <a href="#tentang" class="transition hover:text-slate-950">Tentang</a>
-                        <a href="#kontak" class="transition hover:text-slate-950">Kontak</a>
+                        <a href="/tracking" class="transition hover:text-slate-950">Order</a>
                     </nav>
                     <div class="flex items-center gap-3">
                         {{-- ── Inline Search Bar ── --}}
