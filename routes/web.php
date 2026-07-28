@@ -13,3 +13,4 @@ Route::get('/', function () {
 
     return view('halamanhome', compact('products'));
 });
+// dev
