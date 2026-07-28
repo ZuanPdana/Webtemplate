@@ -16,20 +16,13 @@
                     <p class="mt-4 max-w-md text-sm leading-7 text-slate-300 sm:text-base">Nikmati pengalaman belanja yang cepat, aman, dan personal dari mana saja.</p>
                 </div>
 
-                <div class="mt-8 rounded-[1.5rem] border border-white/10 bg-white/10 p-5 backdrop-blur sm:p-6">
-                    <p class="text-sm font-semibold uppercase tracking-[0.28em] text-slate-300">Pilih akses</p>
-                    <div class="mt-4 grid gap-3 sm:grid-cols-2">
-                        <a href="{{ route('login') }}" class="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/20">Login User</a>
-                        <a href="#admin-login" class="block w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-white/20">Login Admin</a>
-                    </div>
-                </div>
             </div>
 
             <div class="flex w-full items-center justify-center p-5 sm:p-8 lg:w-[54%] lg:p-10 xl:p-12">
                 <div class="w-full max-w-md">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">Login User</p>
+                            <p class="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">Masuk</p>
                             <h2 class="mt-2 text-2xl font-black text-slate-950 sm:text-3xl">Selamat datang kembali</h2>
                         </div>
                         <a href="{{ route('register') }}" class="inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">Daftar</a>
@@ -60,11 +53,6 @@
 
                         <button type="submit" class="w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Masuk</button>
                     </form>
-
-                    <div class="mt-8 rounded-[1.5rem] border border-amber-200 bg-amber-50/80 p-5 shadow-sm">
-                        <p class="text-sm font-semibold uppercase tracking-[0.28em] text-amber-700">Catatan</p>
-                        <p class="mt-2 text-sm leading-6 text-slate-700">Gunakan username/email yang sama untuk login user, atau username admin untuk masuk ke panel administrator.</p>
-                    </div>
 
                     <div class="mt-6 text-center text-sm text-slate-500">
                         Belum punya akun? <a href="{{ route('register') }}" class="font-semibold text-slate-950">Daftar sekarang</a>

@@ -76,7 +76,11 @@ Route::get('/search', function (Request $request) {
 
 Route::get('/profile', function () {
     return view('profile');
-});
+})->middleware('auth')->name('profile');
+
+Route::post('/profile', [App\Http\Controllers\ProfileController::class, 'update'])
+    ->middleware('auth')
+    ->name('profile.update');
 
 Route::get('/tracking', function () {
     return view('tracking');
