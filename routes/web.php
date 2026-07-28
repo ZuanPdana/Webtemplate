@@ -62,6 +62,10 @@ Route::get('/profile', function () {
     return view('profile');
 });
 
+Route::get('/tracking', function () {
+    return view('tracking');
+});
+
 Route::get('/checkout', function () {
     $items = collect(json_decode(request()->cookie('shoestep_checkout', '[]'), true) ?: []);
 
