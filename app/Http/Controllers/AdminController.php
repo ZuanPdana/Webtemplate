@@ -2,47 +2,39 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
-    private const ADMIN_ID = 'admin01';
-    private const ADMIN_PASSWORD = 'admin123';
-
-    public function showLoginForm()
-    {
-        if (session('admin_logged_in')) {
-            return redirect()->route('admin.dashboard');
-        }
-
-        return view('admin.login');
-    }
-
-    public function login(Request $request)
+    public function loginFromMain(Request $request)
     {
         $request->validate([
-            'admin_id' => ['required', 'string'],
+            'login' => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
 
-        if ($request->input('admin_id') === self::ADMIN_ID && $request->input('password') === self::ADMIN_PASSWORD) {
+        $admin = Admin::where('username', $request->input('login'))->first();
+
+        if ($admin && Hash::check($request->input('password'), $admin->password)) {
             session([
                 'admin_logged_in' => true,
-                'admin_id' => self::ADMIN_ID,
+                'admin_id' => $admin->username,
             ]);
 
             return redirect()->route('admin.dashboard');
         }
 
         return back()->withErrors([
-            'login' => 'ID admin atau password salah.',
+            'login' => 'Username admin atau password salah.',
         ])->withInput();
     }
 
     public function dashboard()
     {
         if (!session('admin_logged_in')) {
-            return redirect()->route('admin.login');
+            return redirect()->route('login');
         }
 
         return view('admin.dashboard', [
@@ -54,6 +46,6 @@ class AdminController extends Controller
     {
         session()->forget(['admin_logged_in', 'admin_id']);
 
-        return redirect()->route('admin.login');
+        return redirect()->route('login');
     }
 }

@@ -5,6 +5,18 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 Route::get('/', function () {
+    if (session('admin_logged_in')) {
+        return redirect()->route('admin.dashboard');
+    }
+
+    return redirect()->route('login');
+})->name('portal');
+
+Route::get('/shop', function () {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+
     $products = Product::with(['category', 'images'])
         ->where('status', 'published')
         ->orderByDesc('featured')
@@ -13,6 +25,10 @@ Route::get('/', function () {
         ->get();
 
     return view('halamanhome', compact('products'));
+})->name('shop.home');
+
+Route::get('/home', function () {
+    return redirect()->route('shop.home');
 });
 
 Route::get('/search', function (Request $request) {
@@ -76,8 +92,13 @@ Route::get('/checkout', function () {
     return view('checkout', ['items' => $items]);
 });
 
-Route::get('/admin/login', [App\Http\Controllers\AdminController::class, 'showLoginForm'])->name('admin.login');
-Route::post('/admin/login', [App\Http\Controllers\AdminController::class, 'login'])->name('admin.login.submit');
+Route::get('/register', [App\Http\Controllers\UserAuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [App\Http\Controllers\UserAuthController::class, 'register'])->name('register.submit');
+Route::get('/login', [App\Http\Controllers\UserLoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [App\Http\Controllers\UserLoginController::class, 'login'])->name('login.submit');
+Route::post('/logout', [App\Http\Controllers\UserLoginController::class, 'logout'])->name('logout');
+
+Route::post('/admin/login', [App\Http\Controllers\AdminController::class, 'loginFromMain'])->name('admin.login.submit');
 Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
 Route::get('/admin/logout', [App\Http\Controllers\AdminController::class, 'logout'])->name('admin.logout');
 
