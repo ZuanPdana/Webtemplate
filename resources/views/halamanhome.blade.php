@@ -292,9 +292,16 @@
                                         <p class="text-lg font-black text-slate-950">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
                                         <div class="flex items-center gap-2">
                                             <button
-                                                class="rounded-full border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+                                                class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
                                                 onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }})"
-                                            >Keranjang</button>
+                                                title="Tambah ke keranjang"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.8 4.2a1 1 0 0 0 1 .8h11.4a1 1 0 0 1 .98 1.2l-1.3 5.2A1 1 0 0 1 17.9 15H8.2a1 1 0 0 1-.95-.78L6.1 7.2H4.5" />
+                                                    <circle cx="10" cy="19" r="1.4" fill="currentColor" stroke="none" />
+                                                    <circle cx="17" cy="19" r="1.4" fill="currentColor" stroke="none" />
+                                                </svg>
+                                            </button>
                                             <button
                                                 class="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
                                                 onclick="buyNow({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }})"
