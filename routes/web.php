@@ -9,6 +9,10 @@ Route::get('/', function () {
         return redirect()->route('admin.dashboard');
     }
 
+    if (auth()->check()) {
+        return redirect()->route('shop.home');
+    }
+
     return redirect()->route('login');
 })->name('portal');
 
@@ -17,6 +21,8 @@ Route::get('/shop', function () {
         return redirect()->route('login');
     }
 
+    $categories = \App\Models\Category::where('status', 'active')->orderBy('sort_order')->get();
+
     $products = Product::with(['category', 'images'])
         ->where('status', 'published')
         ->orderByDesc('featured')
@@ -24,7 +30,7 @@ Route::get('/shop', function () {
         ->orderBy('name')
         ->get();
 
-    return view('halamanhome', compact('products'));
+    return view('halamanhome', compact('products', 'categories'));
 })->name('shop.home');
 
 Route::get('/home', function () {

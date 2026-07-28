@@ -212,11 +212,17 @@
                         </div>
                         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
                             <div class="flex flex-wrap items-center gap-2 rounded-full bg-slate-100 p-2" id="category-filter">
-                                <button onclick="filterByCategory('semua', this)" class="cat-btn rounded-full px-4 py-2 text-xs font-semibold" style="background:#0f172a;color:#fff;">Semua</button>
-                                <button onclick="filterByCategory('sport', this)" class="cat-btn rounded-full px-4 py-2 text-xs font-semibold" style="background:transparent;color:#475569;">Sport</button>
-                                <button onclick="filterByCategory('casual', this)" class="cat-btn rounded-full px-4 py-2 text-xs font-semibold" style="background:transparent;color:#475569;">Casual</button>
-                                <button onclick="filterByCategory('formal', this)" class="cat-btn rounded-full px-4 py-2 text-xs font-semibold" style="background:transparent;color:#475569;">Formal</button>
-                                <button onclick="filterByCategory('running', this)" class="cat-btn rounded-full px-4 py-2 text-xs font-semibold" style="background:transparent;color:#475569;">Running</button>
+                                <button onclick="filterByCategory('semua', this)" class="cat-btn rounded-full px-4 py-2 text-xs font-semibold" style="background:#0f172a;color:#fff;">Semua Kategori</button>
+                                @if (isset($categories) && $categories->count() > 0)
+                                    @foreach ($categories as $catItem)
+                                        <button onclick="filterByCategory('{{ strtolower($catItem->slug ?? $catItem->name) }}', this)" class="cat-btn rounded-full px-4 py-2 text-xs font-semibold" style="background:transparent;color:#475569;">{{ $catItem->name }}</button>
+                                    @endforeach
+                                @else
+                                    <button onclick="filterByCategory('sport', this)" class="cat-btn rounded-full px-4 py-2 text-xs font-semibold" style="background:transparent;color:#475569;">Sport</button>
+                                    <button onclick="filterByCategory('casual', this)" class="cat-btn rounded-full px-4 py-2 text-xs font-semibold" style="background:transparent;color:#475569;">Casual</button>
+                                    <button onclick="filterByCategory('formal', this)" class="cat-btn rounded-full px-4 py-2 text-xs font-semibold" style="background:transparent;color:#475569;">Formal</button>
+                                    <button onclick="filterByCategory('running', this)" class="cat-btn rounded-full px-4 py-2 text-xs font-semibold" style="background:transparent;color:#475569;">Running</button>
+                                @endif
                             </div>
                             <div style="position:relative;">
                                 <button id="sort-btn" onclick="toggleSortMenu()" style="display:flex;align-items:center;gap:6px;border-radius:9999px;border:1px solid #e2e8f0;background:#fff;padding:8px 16px;font-size:12px;font-weight:600;color:#475569;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
@@ -240,6 +246,7 @@
                                 class="product-card group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
                                 data-search="{{ strtolower($product->name . ' ' . ($product->category?->name ?? '') . ' ' . $product->description) }}"
                                 data-category="{{ strtolower($product->category?->name ?? '') }}"
+                                data-category-slug="{{ strtolower($product->category?->slug ?? '') }}"
                                 data-price="{{ $product->price }}"
                                 data-name="{{ strtolower($product->name) }}"
                                 data-featured="{{ $product->featured ? '1' : '0' }}"
@@ -425,7 +432,6 @@
                 bar.style.borderColor = '#e2e8f0';
                 bar.style.background = '#f8fafc';
                 bar.style.boxShadow = 'none';
-                filterProductGrid('');
             }
         }
 
@@ -613,14 +619,18 @@
             var heading = section ? section.querySelector('h2') : null;
 
             if (!query || query.length < 1) {
-                /* Reset — show all */
-                cards.forEach(function(c) {
-                    c.style.display = '';
-                    c.style.opacity = '';
-                    c.style.transform = '';
-                });
-                if (noRes) noRes.style.display = 'none';
-                if (heading) heading.textContent = 'Produk unggulan untuk setiap gaya';
+                /* Reset — respect active category */
+                if (typeof filterByCategory === 'function' && typeof activeCategory !== 'undefined') {
+                    filterByCategory(activeCategory, null);
+                } else {
+                    cards.forEach(function(c) {
+                        c.style.display = '';
+                        c.style.opacity = '';
+                        c.style.transform = '';
+                    });
+                    if (noRes) noRes.style.display = 'none';
+                    if (heading) heading.textContent = 'Produk unggulan untuk setiap gaya';
+                }
                 return;
             }
 
@@ -848,14 +858,17 @@
         var activeCategory = 'semua';
 
         function filterByCategory(cat, btn) {
-            activeCategory = cat;
+            console.log('Filter diklik:', cat);
+            activeCategory = cat.toLowerCase();
             /* Update active button styling */
             document.querySelectorAll('.cat-btn').forEach(function(b) {
                 b.style.background = 'transparent';
                 b.style.color      = '#475569';
             });
-            btn.style.background = '#0f172a';
-            btn.style.color      = '#fff';
+            if (btn) {
+                btn.style.background = '#0f172a';
+                btn.style.color      = '#fff';
+            }
 
             var cards = document.querySelectorAll('.product-card');
             var noRes = document.getElementById('search-no-results');
@@ -863,15 +876,16 @@
             var matched = 0;
 
             cards.forEach(function(c) {
-                var cardCat = (c.getAttribute('data-category') || '').trim().toLowerCase();
-                var visible = (cat === 'semua' || cardCat === cat);
+                var cardCat  = (c.getAttribute('data-category') || '').trim().toLowerCase();
+                var cardSlug = (c.getAttribute('data-category-slug') || '').trim().toLowerCase();
+                var target   = activeCategory;
+
+                var visible = (target === 'semua' || cardCat === target || cardSlug === target || (cardCat && cardCat.indexOf(target) !== -1));
+
                 if (visible) {
                     c.style.display = '';
-                    c.style.opacity = '0'; c.style.transform = 'scale(0.97)';
-                    setTimeout(function() {
-                        c.style.transition = 'opacity 0.2s, transform 0.2s';
-                        c.style.opacity = '1'; c.style.transform = 'scale(1)';
-                    }, 10);
+                    c.style.opacity = '1';
+                    c.style.transform = 'scale(1)';
                     matched++;
                 } else {
                     c.style.display = 'none';
@@ -880,7 +894,7 @@
 
             if (noRes) noRes.style.display = matched === 0 ? 'flex' : 'none';
             if (heading) {
-                heading.textContent = cat === 'semua'
+                heading.textContent = activeCategory === 'semua'
                     ? 'Produk unggulan untuk setiap gaya'
                     : matched + ' produk kategori ' + cat.charAt(0).toUpperCase() + cat.slice(1);
             }

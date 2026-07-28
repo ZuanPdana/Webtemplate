@@ -39,7 +39,7 @@ class ProfileController extends Controller
                     'state' => '-',
                     'postal_code' => '-',
                     'country' => 'Indonesia',
-                    'type' => 'home',
+                    'type' => 'shipping',
                 ]);
             }
         }

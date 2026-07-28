@@ -11,6 +11,14 @@ class UserLoginController extends Controller
 {
     public function showLoginForm()
     {
+        if (session('admin_logged_in')) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if (Auth::check()) {
+            return redirect()->route('shop.home');
+        }
+
         return view('auth.login');
     }
 
