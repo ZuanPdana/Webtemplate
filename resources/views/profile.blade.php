@@ -11,14 +11,43 @@
         <div class="min-h-screen">
             <header class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur">
                 <div class="mx-auto flex flex-wrap items-center justify-between gap-4 px-6 py-4 max-w-7xl">
-                    <a href="/" class="text-lg font-black tracking-[0.3em] text-slate-950">SHOESTEP</a>
+                    <a href="{{ route('shop.home') }}" class="text-lg font-black tracking-[0.3em] text-slate-950">SHOESTEP</a>
                     <nav class="hidden items-center gap-8 text-sm text-slate-600 md:flex">
-                        <a href="/" class="transition hover:text-slate-950">Beranda</a>
-                        <a href="/profile" class="font-semibold text-slate-950">Profil</a>
-                        <a href="/" class="transition hover:text-slate-950">Produk</a>
-                        <a href="/" class="transition hover:text-slate-950">Kontak</a>
+                        <a href="{{ route('shop.home') }}" class="transition hover:text-slate-950">Beranda</a>
+                        <a href="{{ route('shop.home') }}#produk" class="transition hover:text-slate-950">Produk</a>
+                        <a href="{{ route('shop.home') }}#fitur" class="transition hover:text-slate-950">Fitur</a>
+                        <a href="{{ route('shop.home') }}#tentang" class="transition hover:text-slate-950">Tentang</a>
+                        <a href="/tracking" class="transition hover:text-slate-950">Order</a>
                     </nav>
-                    <a href="/" class="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-slate-200/20 transition hover:bg-slate-800">Belanja</a>
+                    <div class="flex items-center gap-3">
+                        <div id="search-wrapper" class="relative hidden md:block">
+                            <div id="search-bar" style="display:flex;align-items:center;gap:8px;border-radius:9999px;border:1px solid #e2e8f0;background:#f8fafc;padding:8px 16px;width:220px;transition:width 0.3s ease,border-color 0.2s,background 0.2s,box-shadow 0.2s;overflow:hidden;" onfocusin="this.style.borderColor='#94a3b8';this.style.background='#fff';this.style.boxShadow='0 4px 20px rgba(15,23,42,0.08)'" onfocusout="this.style.borderColor='#e2e8f0';this.style.background='#f8fafc';this.style.boxShadow='none'">
+                                <svg id="search-icon" xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px;flex-shrink:0;color:#94a3b8;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8" />
+                                    <path d="m21 21-4.35-4.35" />
+                                </svg>
+                                <input type="text" placeholder="Cari sepatu..." autocomplete="off" spellcheck="false" style="flex:1;min-width:0;background:transparent;font-size:13px;color:#0f172a;border:none;outline:none;" />
+                            </div>
+                        </div>
+                        <button onclick="window.location.href='{{ route('shop.wishlist') }}'" title="Wishlist" style="position:relative;width:40px;height:40px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#64748b;transition:background 0.15s;" onmouseenter="this.style.background='#f1f5f9'" onmouseleave="this.style.background='transparent'">
+                            <svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                            </svg>
+                        </button>
+                        <button onclick="window.location.href='{{ route('shop.home') }}'" title="Keranjang" style="position:relative;width:40px;height:40px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#64748b;transition:background 0.15s;" onmouseenter="this.style.background='#f1f5f9'" onmouseleave="this.style.background='transparent'">
+                            <svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                                <line x1="3" y1="6" x2="21" y2="6" />
+                                <path d="M16 10a4 4 0 0 1-8 0" />
+                            </svg>
+                        </button>
+                        <button onclick="window.location.href='/profile'" title="Profil" style="position:relative;width:40px;height:40px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#64748b;transition:background 0.15s;" onmouseenter="this.style.background='#f1f5f9'" onmouseleave="this.style.background='transparent'">
+                            <svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path d="M5.121 17.804A13.937 13.937 0 0 1 12 15c2.756 0 5.302.88 7.379 2.373M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                <path d="M4.5 19a8.25 8.25 0 0 1 15 0" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </header>
 

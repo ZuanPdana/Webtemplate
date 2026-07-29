@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <title>SHOESTEP - Home</title>
     @fonts
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -113,11 +114,11 @@
                     <div style="display:flex;align-items:center;gap:4px;">
 
                         {{-- Wishlist --}}
-                        <button id="nav-wishlist" onclick="openWishlistPanel()" title="Wishlist" style="position:relative;width:40px;height:40px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#64748b;transition:background 0.15s;" onmouseenter="this.style.background='#f1f5f9'" onmouseleave="this.style.background='transparent'">
+                        <button id="nav-wishlist" onclick="window.location.href='{{ route('shop.wishlist') }}'" title="Wishlist" style="position:relative;width:40px;height:40px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#64748b;transition:background 0.15s;" onmouseenter="this.style.background='#f1f5f9'" onmouseleave="this.style.background='transparent'">
                             <svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                             </svg>
-                            <span id="wishlist-badge" style="display:none;position:absolute;top:4px;right:4px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center;">0</span>
+                            <span id="wishlist-badge" style="display:{{ count($favoriteProductIds) > 0 ? 'block' : 'none' }};position:absolute;top:4px;right:4px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center;">{{ count($favoriteProductIds) }}</span>
                         </button>
 
                         {{-- Cart --}}
@@ -184,7 +185,7 @@
                         </div>
                         <div class="flex flex-wrap gap-4">
                             <a href="#produk" class="inline-flex items-center justify-center rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-slate-950 transition hover:bg-slate-100">Belanja Sekarang</a>
-                            <a href="#fitur" class="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-white/10">Lihat Koleksi</a>
+                            <a href="{{ route('shop.wishlist') }}" class="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-white/10">Lihat Koleksi</a>
                         </div>
                         <div class="grid grid-cols-3 gap-4 sm:grid-cols-3">
                             <div class="rounded-3xl bg-white/5 px-4 py-5 text-center">
@@ -289,8 +290,10 @@
                         data-status="{{ $product->status }}"
                         data-weight="{{ $product->weight ?? '0.0' }}"
                         data-category-name="{{ $product->category?->name ?? 'Kategori' }}"
+                        data-stock="{{ $product->stock }}"
                         data-featured="{{ $product->featured ? '1' : '0' }}"
                         data-popular="{{ $product->popular ? '1' : '0' }}"
+                        data-favorited="{{ in_array($product->id, $favoriteProductIds) ? '1' : '0' }}"
                         data-id="{{ $product->id }}">
                         <div class="relative overflow-hidden bg-slate-100 p-6">
                             @if ($product->featured)
@@ -302,9 +305,11 @@
                                 class="wishlist-btn absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm transition hover:scale-110"
                                 data-id="{{ $product->id }}"
                                 data-name="{{ $product->name }}"
-                                onclick="toggleWishlist(this)"
-                                title="Tambah ke wishlist">
-                                <svg xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                data-favorited="{{ in_array($product->id, $favoriteProductIds) ? '1' : '0' }}"
+                                onclick="event.stopPropagation(); toggleWishlist(this)"
+                                title="Tambah ke wishlist"
+                                style="{{ in_array($product->id, $favoriteProductIds) ? 'color:#ef4444;' : '' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;" fill="{{ in_array($product->id, $favoriteProductIds) ? '#ef4444' : 'none' }}" viewBox="0 0 24 24" stroke="{{ in_array($product->id, $favoriteProductIds) ? '#ef4444' : 'currentColor' }}" stroke-width="2">
                                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                                 </svg>
                             </button>
@@ -777,40 +782,58 @@
         /* ════════════════════════════════════
            WISHLIST
         ════════════════════════════════════ */
-        var wishlist = JSON.parse(localStorage.getItem('shoestep_wishlist') || '[]');
 
         function toggleWishlist(btn) {
             var id = btn.getAttribute('data-id');
             var name = btn.getAttribute('data-name');
             var svg = btn.querySelector('svg');
-            var idx = wishlist.findIndex(function(i) {
-                return i.id === id;
-            });
-            if (idx === -1) {
-                wishlist.push({
-                    id: id,
-                    name: name
-                });
-                svg.style.fill = '#ef4444';
-                svg.style.stroke = '#ef4444';
-                btn.style.color = '#ef4444';
-                showToast('❤️ Ditambahkan ke wishlist: ' + name);
-            } else {
-                wishlist.splice(idx, 1);
-                svg.style.fill = 'none';
-                svg.style.stroke = 'currentColor';
-                btn.style.color = '';
-                showToast('💔 Dihapus dari wishlist');
+            var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            if (!id) {
+                return;
             }
-            localStorage.setItem('shoestep_wishlist', JSON.stringify(wishlist));
-            updateWishlistBadge();
-            renderWishlistPanel();
+
+            fetch('/wishlist/toggle/' + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                },
+                body: JSON.stringify({}),
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.status === 'added') {
+                    svg.style.fill = '#ef4444';
+                    svg.style.stroke = '#ef4444';
+                    btn.style.color = '#ef4444';
+                    showToast('❤️ Ditambahkan ke wishlist: ' + name);
+                } else {
+                    svg.style.fill = 'none';
+                    svg.style.stroke = 'currentColor';
+                    btn.style.color = '';
+                    showToast('💔 Dihapus dari wishlist');
+                }
+
+                var badge = document.getElementById('wishlist-badge');
+                if (badge) {
+                    badge.textContent = data.count || 0;
+                    badge.style.display = (data.count || 0) > 0 ? 'block' : 'none';
+                }
+            })
+            .catch(function() {
+                showToast('Gagal memperbarui wishlist. Silakan coba lagi.');
+            });
         }
 
         function updateWishlistBadge() {
             var badge = document.getElementById('wishlist-badge');
-            badge.textContent = wishlist.length;
-            badge.style.display = wishlist.length > 0 ? 'block' : 'none';
+            if (!badge) return;
+            var count = parseInt(badge.textContent || '0', 10);
+            badge.style.display = count > 0 ? 'block' : 'none';
         }
 
         function openWishlistPanel() {

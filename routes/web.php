@@ -30,7 +30,9 @@ Route::get('/shop', function () {
         ->orderBy('name')
         ->get();
 
-    return view('halamanhome', compact('products', 'categories'));
+    $favoriteProductIds = auth()->user()->favorites()->pluck('product_id')->toArray();
+
+    return view('halamanhome', compact('products', 'categories', 'favoriteProductIds'));
 })->name('shop.home');
 
 Route::get('/shop/product/{product}', function (Product $product) {
@@ -92,6 +94,51 @@ Route::get('/search', function (Request $request) {
 
     return response()->json($products);
 });
+
+Route::get('/wishlist', function () {
+    $favorites = auth()->user()->favorites()
+        ->with(['product.category', 'product.images'])
+        ->get();
+
+    return view('wishlist', compact('favorites'));
+})->middleware('auth')->name('shop.wishlist');
+
+Route::post('/wishlist/toggle/{product}', function (Product $product) {
+    $user = auth()->user();
+    $favorite = $user->favorites()->where('product_id', $product->id)->first();
+
+    if ($favorite) {
+        $favorite->delete();
+        $count = $user->favorites()->count();
+
+        return response()->json([
+            'status' => 'removed',
+            'count' => $count,
+        ]);
+    }
+
+    $user->favorites()->create(['product_id' => $product->id]);
+    $count = $user->favorites()->count();
+
+    return response()->json([
+        'status' => 'added',
+        'count' => $count,
+    ]);
+})->middleware('auth')->name('shop.wishlist.toggle');
+
+Route::post('/wishlist/remove/{product}', function (Product $product) {
+    $user = auth()->user();
+    $user->favorites()->where('product_id', $product->id)->delete();
+
+    return redirect()->route('shop.wishlist');
+})->middleware('auth')->name('shop.wishlist.remove');
+
+Route::post('/wishlist/clear', function () {
+    $user = auth()->user();
+    $user->favorites()->delete();
+
+    return redirect()->route('shop.wishlist');
+})->middleware('auth')->name('shop.wishlist.clear');
 
 Route::get('/profile', function () {
     return view('profile');
