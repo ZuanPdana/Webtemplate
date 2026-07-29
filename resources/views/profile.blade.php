@@ -49,9 +49,9 @@
 
                         <div class="w-full max-w-sm rounded-[2rem] bg-slate-950 p-8 text-white shadow-xl">
                             <div class="flex items-center gap-4">
-                                <div class="relative h-16 w-16 overflow-hidden rounded-full bg-white/10 border border-white/20">
+                                <div class="relative h-16 w-16 overflow-hidden rounded-full border-2 border-white/20 bg-slate-900 shadow-[0_6px_20px_rgba(15,23,42,0.25)]">
                                     @if(auth()->user()->avatar)
-                                        <img src="{{ str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . auth()->user()->avatar) }}" alt="Avatar {{ auth()->user()->name }}" class="h-full w-full object-cover" />
+                                        <img src="{{ str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . auth()->user()->avatar) }}" alt="Avatar {{ auth()->user()->name }}" class="h-full w-full rounded-full object-cover" />
                                     @else
                                         <div class="flex h-full w-full items-center justify-center text-2xl font-black text-white">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
                                     @endif
@@ -165,9 +165,11 @@
 
         <div id="edit-modal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
             <div class="bg-white rounded-[2rem] p-8 w-full max-w-lg shadow-2xl relative" style="max-height:90vh;overflow-y:auto;">
-                <button onclick="document.getElementById('edit-modal').style.display='none'" class="absolute top-6 right-6 text-slate-400 hover:text-slate-900">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
+                <div class="mb-6 flex justify-end">
+                    <button onclick="document.getElementById('edit-modal').style.display='none'" class="rounded-full border border-slate-200 bg-slate-50 p-2 text-slate-400 transition hover:border-slate-300 hover:text-slate-900">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
                 <h2 class="text-2xl font-black text-slate-950 mb-6">Edit Profil</h2>
                 <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
@@ -190,7 +192,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1">Foto Profil</label>
                         <input type="file" id="avatar" name="avatar" accept="image/*" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white" />
-                        <p class="mt-2 text-xs text-slate-500">Unggah foto profil baru (JPEG, PNG, GIF, WEBP, max 2MB).</p>
+                        <p class="mt-2 text-xs text-slate-500">Unggah foto profil baru (JPEG, PNG, GIF, WEBP, max 2MB). Gambar akan diproses ke ukuran 500x500 px.</p>
                     </div>
                     <div class="pt-4">
                         <button type="submit" class="w-full rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Simpan Perubahan</button>
