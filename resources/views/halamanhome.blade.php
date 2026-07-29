@@ -271,13 +271,24 @@
 
                 <div id="product-grid" class="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
                     @forelse ($products as $product)
+                    @php
+                        $mainImage = $product->images->first()?->image ?? $product->thumbnail;
+                        $imageUrl = $mainImage ? asset($mainImage) : '';
+                        $description = trim(preg_replace('/\s+/', ' ', $product->description));
+                    @endphp
                     <article
                         class="product-card group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+                        onclick="openProductModal(this)"
                         data-search="{{ strtolower($product->name . ' ' . ($product->category?->name ?? '') . ' ' . $product->description) }}"
                         data-category="{{ strtolower($product->category?->name ?? '') }}"
                         data-category-slug="{{ strtolower($product->category?->slug ?? '') }}"
                         data-price="{{ $product->price }}"
                         data-name="{{ strtolower($product->name) }}"
+                        data-image="{{ e($imageUrl) }}"
+                        data-description="{{ e($description) }}"
+                        data-status="{{ $product->status }}"
+                        data-weight="{{ $product->weight ?? '0.0' }}"
+                        data-category-name="{{ $product->category?->name ?? 'Kategori' }}"
                         data-featured="{{ $product->featured ? '1' : '0' }}"
                         data-popular="{{ $product->popular ? '1' : '0' }}"
                         data-id="{{ $product->id }}">
@@ -327,10 +338,19 @@
                             <div class="flex items-center justify-between gap-4 pt-2">
                                 <p class="text-lg font-black text-slate-950">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
                                 <div class="flex items-center gap-2">
-                                    <a href="{{ route('shop.product.show', $product) }}" class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Detail</a>
+                                    <button
+                                        class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+                                        onclick="event.stopPropagation(); addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }});"
+                                        title="Tambah ke keranjang">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path d="M3 3h2l.8 4.2a1 1 0 0 0 1 .8h11.4a1 1 0 0 1 .98 1.2l-1.3 5.2A1 1 0 0 1 17.9 15H8.2a1 1 0 0 1-.95-.78L6.1 7.2H4.5" />
+                                            <circle cx="10" cy="19" r="1.4" fill="currentColor" stroke="none" />
+                                            <circle cx="17" cy="19" r="1.4" fill="currentColor" stroke="none" />
+                                        </svg>
+                                    </button>
                                     <button
                                         class="rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
-                                        onclick="buyNow({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }})">Beli</button>
+                                        onclick="event.stopPropagation(); buyNow({{ $product->id }}, '{{ addslashes($product->name) }}', {{ $product->price }})">Beli</button>
                                 </div>
                             </div>
                         </div>
@@ -391,6 +411,35 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <div id="product-modal-overlay" onclick="if (event.target === this) closeProductModal()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.65);backdrop-filter:blur(4px);z-index:1200;align-items:center;justify-content:center;padding:24px;">
+        <div id="product-modal" style="position:relative;width:min(100%,980px);max-height:calc(100vh - 48px);overflow-y:auto;border-radius:32px;background:#fff;box-shadow:0 40px 120px rgba(15,23,42,0.2);">
+            <button onclick="closeProductModal()" style="position:absolute;top:18px;right:18px;width:40px;height:40px;border:none;border-radius:9999px;background:rgba(15,23,42,0.04);cursor:pointer;font-size:16px;color:#0f172a;">×</button>
+            <div style="display:grid;gap:24px;padding:32px;grid-template-columns:1.1fr 0.9fr;">
+                <div style="display:flex;flex-direction:column;gap:24px;">
+                    <div style="border-radius:28px;overflow:hidden;background:#f8fafc;min-height:360px;display:flex;align-items:center;justify-content:center;">
+                        <img id="modal-image" src="" alt="" style="width:100%;height:auto;object-fit:contain;max-height:440px;" />
+                    </div>
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                        <span id="modal-badge" style="display:none;padding:8px 14px;border-radius:9999px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;color:#fff;background:#0f172a;"></span>
+                        <span id="modal-category" style="padding:8px 14px;border-radius:9999px;background:#f1f5f9;color:#475569;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;"></span>
+                    </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:18px;">
+                    <div>
+                        <p id="modal-status" style="margin-bottom:12px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.2em;color:#94a3b8;"></p>
+                        <h2 id="modal-title" style="font-size:2rem;font-weight:900;color:#0f172a;margin:0;line-height:1.05;"></h2>
+                        <p id="modal-price" style="margin-top:16px;font-size:1.75rem;font-weight:900;color:#0f172a;"></p>
+                    </div>
+                    <p id="modal-description" style="font-size:0.95rem;line-height:1.75;color:#475569;"></p>
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                        <button onclick="event.stopPropagation(); addToCart(modalProductId, modalProductName, modalProductPrice);" style="flex:1;min-width:140px;border-radius:9999px;border:none;background:#0f172a;color:#fff;padding:14px 20px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:background 0.15s;">Tambah ke Keranjang</button>
+                        <button onclick="event.stopPropagation(); buyNow(modalProductId, modalProductName, modalProductPrice);" style="flex:1;min-width:140px;border-radius:9999px;border:none;background:#059669;color:#fff;padding:14px 20px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:background 0.15s;">Beli Sekarang</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1046,6 +1095,54 @@
                 t.style.opacity = '0';
                 t.style.transform = 'translateY(10px)';
             }, 2500);
+        }
+
+        var modalProductId = null;
+        var modalProductName = '';
+        var modalProductPrice = 0;
+
+        function openProductModal(card) {
+            var image = card.getAttribute('data-image') || '';
+            var description = card.getAttribute('data-description') || '';
+            var status = card.getAttribute('data-status') || '';
+            var price = card.getAttribute('data-price') || '';
+            var name = card.getAttribute('data-name') || '';
+            var category = card.getAttribute('data-category-name') || '';
+            var featured = card.getAttribute('data-featured') === '1';
+            var popular = card.getAttribute('data-popular') === '1';
+            var id = card.getAttribute('data-id');
+
+            modalProductId = id;
+            modalProductName = card.getAttribute('data-name') || name;
+            modalProductPrice = Number(price || 0);
+
+            var badge = document.getElementById('modal-badge');
+            badge.style.display = 'none';
+            if (featured) {
+                badge.textContent = 'Terlaris';
+                badge.style.background = '#0f172a';
+                badge.style.display = 'inline-flex';
+            } else if (popular) {
+                badge.textContent = 'Populer';
+                badge.style.background = '#f59e0b';
+                badge.style.display = 'inline-flex';
+            }
+
+            document.getElementById('modal-image').src = image || 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20240%20140%22%3E%3Cellipse%20cx%3D%22120%22%20cy%3D%22128%22%20rx%3D%22100%22%20ry%3D%229%22%20fill%3D%22%23e2e8f0%22%20/%3E%3Cpath%20d%3D%22M35%20108%20Q50%2072%20100%2065%20L168%2058%20Q200%2058%20205%2076%20Q210%2092%20192%20100%20Q172%20108%20120%20112%20Q72%20115%2035%20108Z%22%20fill%3D%22%23cbd5e1%22%20/%3E%3C/svg%3E';
+            document.getElementById('modal-title').textContent = card.getAttribute('data-name') ? card.getAttribute('data-name').charAt(0).toUpperCase() + card.getAttribute('data-name').slice(1) : name;
+            document.getElementById('modal-description').textContent = description;
+            document.getElementById('modal-price').textContent = 'Rp' + Number(price).toLocaleString('id-ID');
+            document.getElementById('modal-status').textContent = status ? status.replace(/_/g, ' ') : '';
+            document.getElementById('modal-category').textContent = category;
+            document.getElementById('modal-category').style.display = category ? 'inline-flex' : 'none';
+
+            document.getElementById('product-modal-overlay').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal-overlay').style.display = 'none';
+            document.body.style.overflow = '';
         }
 
         /* Init badges on load */

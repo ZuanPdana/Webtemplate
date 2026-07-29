@@ -20,9 +20,7 @@
                     <a href="/profile" class="transition hover:text-slate-950">Profil</a>
                     <a href="/tracking" class="transition hover:text-slate-950">Order</a>
                 </nav>
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('shop.home') }}" class="rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Kembali ke Toko</a>
-                </div>
+                <div class="flex items-center gap-3"></div>
             </div>
         </header>
 
