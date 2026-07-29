@@ -3,11 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
+use App\Models\Coupon;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
+    public function showLogin()
+    {
+        if (session('admin_logged_in')) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return view('admin.login');
+    }
+
     public function loginFromMain(Request $request)
     {
         $request->validate([
@@ -34,11 +46,14 @@ class AdminController extends Controller
     public function dashboard()
     {
         if (!session('admin_logged_in')) {
-            return redirect()->route('login');
+            return redirect()->route('admin.login');
         }
 
         return view('admin.dashboard', [
             'adminId' => session('admin_id'),
+            'totalProducts' => Product::count(),
+            'totalUsers' => User::count(),
+            'totalPromotions' => Coupon::count(),
         ]);
     }
 

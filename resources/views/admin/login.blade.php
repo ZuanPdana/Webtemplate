@@ -57,8 +57,8 @@
         <form method="POST" action="{{ route('admin.login.submit') }}">
             @csrf
             <div class="form-group">
-                <label for="admin_id">ID Admin</label>
-                <input type="text" id="admin_id" name="admin_id" value="{{ old('admin_id') }}" required>
+                <label for="login">Username Admin</label>
+                <input type="text" id="login" name="login" value="{{ old('login') }}" required>
             </div>
 
             <div class="form-group">

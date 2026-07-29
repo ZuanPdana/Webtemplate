@@ -1,26 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f8; margin: 0; padding: 30px; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
-        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        a { text-decoration: none; color: #1f2937; }
-        .btn { display: inline-block; padding: 10px 15px; background: #1f2937; color: white; border-radius: 8px; }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <div class="topbar">
-            <h2>Selamat datang, Admin {{ $adminId }}</h2>
-            <a class="btn" href="{{ route('admin.logout') }}">Logout</a>
+@extends('admin.layout')
+
+@section('title', 'Dashboard Admin')
+
+@section('content')
+<div class="space-y-6">
+    <div class="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">Selamat datang kembali</p>
+                <h1 class="mt-3 text-3xl font-black text-slate-950">Dashboard Admin</h1>
+                <p class="mt-2 text-sm leading-7 text-slate-600">Kelola produk, pengguna, dan promo dengan tampilan serupa halaman user.</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ route('admin.products.create') }}" class="inline-flex items-center justify-center rounded-full bg-emerald-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500">Tambah Produk</a>
+                <a href="{{ route('admin.promotions.create') }}" class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Tambah Promo</a>
+            </div>
         </div>
-        <p>Halaman admin Anda sudah siap.</p>
-        <p>Gunakan ID admin: <strong>admin01</strong></p>
-        <p>Password: <strong>admin123</strong></p>
     </div>
-</body>
-</html>
+
+    <div class="grid gap-6 xl:grid-cols-3">
+        <div class="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
+            <p class="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">Produk</p>
+            <p class="mt-5 text-4xl font-black text-slate-950">{{ number_format($totalProducts) }}</p>
+            <p class="mt-2 text-sm text-slate-600">Total produk yang terdaftar di toko.</p>
+        </div>
+        <div class="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
+            <p class="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">Pengguna</p>
+            <p class="mt-5 text-4xl font-black text-slate-950">{{ number_format($totalUsers) }}</p>
+            <p class="mt-2 text-sm text-slate-600">Total akun terdaftar.</p>
+        </div>
+        <div class="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
+            <p class="text-sm font-semibold uppercase tracking-[0.25em] text-slate-500">Promo</p>
+            <p class="mt-5 text-4xl font-black text-slate-950">{{ number_format($totalPromotions) }}</p>
+            <p class="mt-2 text-sm text-slate-600">Kode promo dan kupon aktif/tersimpan.</p>
+        </div>
+    </div>
+</div>
+@endsection
