@@ -16,13 +16,20 @@ class ProfileController extends Controller
             'username' => 'required|string|max:255|unique:users,username,' . $user->id,
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
 
-        $user->update([
+        $data = [
             'name' => $request->name,
             'username' => $request->username,
             'phone' => $request->phone,
-        ]);
+        ];
+
+        if ($request->hasFile('avatar')) {
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        $user->update($data);
 
         if ($request->filled('address')) {
             $address = $user->addresses()->where('is_default', true)->first();

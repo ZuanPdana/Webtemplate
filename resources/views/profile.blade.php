@@ -49,7 +49,13 @@
 
                         <div class="w-full max-w-sm rounded-[2rem] bg-slate-950 p-8 text-white shadow-xl">
                             <div class="flex items-center gap-4">
-                                <div class="flex h-16 w-16 items-center justify-center rounded-full bg-white/10 text-2xl font-black">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+                                <div class="relative h-16 w-16 overflow-hidden rounded-full bg-white/10 border border-white/20">
+                                    @if(auth()->user()->avatar)
+                                        <img src="{{ str_starts_with(auth()->user()->avatar, 'http') ? auth()->user()->avatar : asset('storage/' . auth()->user()->avatar) }}" alt="Avatar {{ auth()->user()->name }}" class="h-full w-full object-cover" />
+                                    @else
+                                        <div class="flex h-full w-full items-center justify-center text-2xl font-black text-white">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+                                    @endif
+                                </div>
                                 <div>
                                     <p class="text-xs uppercase tracking-[0.3em] text-slate-400">Member Premium</p>
                                     <h2 class="mt-1 text-2xl font-black">{{ auth()->user()->name }}</h2>
@@ -163,7 +169,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
                 <h2 class="text-2xl font-black text-slate-950 mb-6">Edit Profil</h2>
-                <form action="{{ route('profile.update') }}" method="POST" class="space-y-4">
+                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Lengkap</label>
@@ -180,6 +186,11 @@
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-1">Alamat Utama</label>
                         <textarea name="address" rows="3" placeholder="Masukkan alamat lengkap" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white">{{ auth()->user()->addresses()->where('is_default', true)->first()->line_one ?? '' }}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Foto Profil</label>
+                        <input type="file" id="avatar" name="avatar" accept="image/*" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white" />
+                        <p class="mt-2 text-xs text-slate-500">Unggah foto profil baru (JPEG, PNG, GIF, WEBP, max 2MB).</p>
                     </div>
                     <div class="pt-4">
                         <button type="submit" class="w-full rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Simpan Perubahan</button>
