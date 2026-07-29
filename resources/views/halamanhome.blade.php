@@ -134,10 +134,13 @@
                                         Pengaturan
                                     </a>
                                     <div style="height:1px;background:#f1f5f9;margin:4px 0;"></div>
-                                    <a href="#" style="display:flex;align-items:center;gap:10px;padding:12px 16px;font-size:13px;font-weight:500;color:#ef4444;text-decoration:none;transition:background 0.15s;" onmouseenter="this.style.background='#fef2f2'" onmouseleave="this.style.background='transparent'">
-                                        <svg xmlns="http://www.w3.org/2000/svg" style="width:15px;height:15px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                                        Keluar
-                                    </a>
+                                    <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                                        @csrf
+                                        <button type="submit" style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 16px;font-size:13px;font-weight:500;color:#ef4444;background:transparent;border:none;text-align:left;cursor:pointer;transition:background 0.15s;" onmouseenter="this.style.background='#fef2f2'" onmouseleave="this.style.background='transparent'">
+                                            <svg xmlns="http://www.w3.org/2000/svg" style="width:15px;height:15px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                                            Keluar
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
 
