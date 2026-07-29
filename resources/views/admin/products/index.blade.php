@@ -46,7 +46,7 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 bg-white">
                     @forelse($products as $product)
-                        <tr class="hover:bg-slate-50">
+                        <tr class="hover:bg-slate-50" data-search="{{ Str::lower($product->name . ' ' . ($product->category?->name ?? '') . ' ' . $product->description) }}">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <img src="{{ asset('storage/' . $product->thumbnail) }}" alt="{{ $product->name }}" class="h-14 w-14 rounded-2xl object-cover" />
@@ -76,7 +76,7 @@
 
         <div class="flex flex-col gap-4 md:hidden">
             @forelse($products as $product)
-                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm" data-search="{{ Str::lower($product->name . ' ' . ($product->category?->name ?? '') . ' ' . $product->description) }}">
                     <div class="flex items-start justify-between gap-4">
                         <div class="flex items-center gap-3">
                             <img src="{{ asset('storage/' . $product->thumbnail) }}" alt="{{ $product->name }}" class="h-16 w-16 rounded-lg object-cover" />
@@ -86,9 +86,7 @@
                                 <p class="mt-1 text-sm text-slate-700">Rp{{ number_format($product->price, 0, ',', '.') }}</p>
                             </div>
                         </div>
-                        <div class="flex-shrink-0">
-                            <a href="{{ route('admin.products.edit', $product) }}" class="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-800">Edit</a>
-                        </div>
+                        <a href="{{ route('admin.products.edit', $product) }}" class="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-800">Edit</a>
                     </div>
                 </div>
             @empty
@@ -101,4 +99,50 @@
         <div class="mt-4">{{ $products->links() }}</div>
     @endif
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var searchInput = document.querySelector('.admin-search-form input[name="search"]');
+        if (!searchInput) return;
+
+        var desktopRows = document.querySelectorAll('tbody tr[data-search]');
+        var mobileCards = document.querySelectorAll('.flex.flex-col.gap-4.md\\:hidden > div[data-search]');
+        var emptyRow = document.createElement('tr');
+        emptyRow.className = 'no-results hidden';
+        emptyRow.innerHTML = '<td colspan="7" class="px-6 py-8 text-center text-sm text-slate-500">Tidak ada produk cocok dengan pencarian.</td>';
+        var desktopBody = document.querySelector('tbody');
+        if (desktopBody) desktopBody.appendChild(emptyRow);
+
+        function normalize(value) {
+            return String(value || '').trim().toLowerCase();
+        }
+
+        function filterProducts(query) {
+            var value = normalize(query);
+            var hasVisible = false;
+
+            desktopRows.forEach(function (row) {
+                var text = normalize(row.dataset.search);
+                var match = value === '' || text.indexOf(value) !== -1;
+                row.style.display = match ? '' : 'none';
+                if (match) hasVisible = true;
+            });
+
+            mobileCards.forEach(function (card) {
+                var text = normalize(card.dataset.search);
+                var match = value === '' || text.indexOf(value) !== -1;
+                card.style.display = match ? '' : 'none';
+                if (match) hasVisible = true;
+            });
+
+            if (desktopBody) {
+                emptyRow.classList.toggle('hidden', hasVisible);
+            }
+        }
+
+        searchInput.addEventListener('input', function () {
+            filterProducts(this.value);
+        });
+    });
+</script>
 @endsection

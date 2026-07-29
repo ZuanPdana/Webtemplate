@@ -33,6 +33,19 @@ Route::get('/shop', function () {
     return view('halamanhome', compact('products', 'categories'));
 })->name('shop.home');
 
+Route::get('/shop/product/{product}', function (Product $product) {
+    $product->load([
+        'category',
+        'images' => fn ($query) => $query->orderBy('sort_order'),
+        'reviews.user',
+    ])->loadCount([
+        'favorites',
+        'orderItems as purchases_count',
+    ]);
+
+    return view('shop.product', compact('product'));
+})->middleware('auth')->name('shop.product.show');
+
 Route::get('/home', function () {
     return redirect()->route('shop.home');
 });
